@@ -1,0 +1,93 @@
+use std::fs;
+use std::path::Path;
+use quick_xml::de::from_str;
+use chrono::{DateTime, Utc};
+use serde::Deserialize;
+
+include!("base_types.rs");
+
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+struct CreationInfo {
+    agency_id: Option<String>,
+    agency_uri: Option<String>,  // should be serialized to http::Uri instead
+    creation_time: DateTime<Utc>
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+struct OriginQuality {
+    used_station_count: Option<i32>,
+    used_phase_count: Option<i32>,
+    standard_error: Option<f64>,
+    azimuthal_gap: Option<f64>,
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+struct OriginUncertainty {
+    horizontal_uncertainty: f64,
+    preferred_description: String
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+struct Origin {
+    time: TimeQuantity,
+    longitude: RealQuantity,
+    latitude: RealQuantity,
+    depth: RealQuantity,
+    origin_uncertainty: OriginUncertainty,
+    quality: OriginQuality,
+    evaluation_mode: String,
+    creation_info: CreationInfo,
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+struct Magnitude {
+    mag: RealQuantity,
+    #[serde(rename = "type")]
+    _type: String,
+    creation_time: Option<DateTime<Utc>>,
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+struct Description {
+    #[serde(rename = "type")]
+    _type: String,
+    text: String
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+struct Event {
+    description: Description,
+    origin: Origin,
+    magnitude: Magnitude,
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+struct EventParameters {
+    event: Vec<Event>,
+    creation_info: CreationInfo
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+struct Quakeml {
+    event_parameters: EventParameters,
+}
+
+pub(crate) fn deserialize_quakeml(data: String) {
+    let quakeml: Quakeml = from_str(&*data).expect("something went wrong");
+    println!("{:?}", quakeml);
+}
+
+
+pub(crate) fn read_quakeml(filename: &Path) -> String {
+    let data = fs::read_to_string(filename)
+        .expect("something went wrong;");
+    return data;
+}
+
