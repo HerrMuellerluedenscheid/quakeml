@@ -1,10 +1,11 @@
-use chrono::{DateTime, Utc};
-use quick_xml::de::from_str;
-use serde::Deserialize;
 use std::fmt;
 use std::fmt::Formatter;
 use std::fs;
-use std::path::Path;
+use std::path::PathBuf;
+
+use chrono::{DateTime, Utc};
+use quick_xml::de::from_str;
+use serde::Deserialize;
 
 include!("base_types.rs");
 
@@ -77,22 +78,36 @@ struct EventParameters {
 
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-struct QuakeML {
+pub struct QuakeML {
     event_parameters: EventParameters,
 }
 
 impl fmt::Display for QuakeML {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "Catalog length: {}", self.event_parameters.event.len())
+        write!(f, "Events in catalog: {}", self.event_parameters.event.len())
     }
 }
 
-pub(crate) fn deserialize_quakeml(data: String) {
+pub(crate) fn deserialize_quakeml(data: String) -> QuakeML {
     let quakeml: QuakeML = from_str(&*data).expect("something went wrong");
-    println!("{}", quakeml);
+    quakeml
 }
 
-pub(crate) fn read_quakeml(filename: &Path) -> String {
+pub(crate) fn read_quakeml(filename: &PathBuf) -> QuakeML {
     let data = fs::read_to_string(filename).expect("something went wrong;");
-    return data;
+    deserialize_quakeml(data)
+}
+
+#[cfg(test)]
+mod tests {
+    use std::path::PathBuf;
+
+    use crate::quakeml::read_quakeml;
+
+    #[test]
+    fn catalog_max() {
+        let mut data_sample = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        data_sample.push("resources/sample.quakeml");
+        let _catalog = read_quakeml(&data_sample);
+    }
 }
