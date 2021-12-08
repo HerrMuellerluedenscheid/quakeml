@@ -1,8 +1,8 @@
+use chrono::{DateTime, Utc};
+use quick_xml::de::from_str;
+use serde::Deserialize;
 use std::fs;
 use std::path::Path;
-use quick_xml::de::from_str;
-use chrono::{DateTime, Utc};
-use serde::Deserialize;
 
 include!("base_types.rs");
 
@@ -10,8 +10,8 @@ include!("base_types.rs");
 #[serde(rename_all = "camelCase")]
 struct CreationInfo {
     agency_id: Option<String>,
-    agency_uri: Option<String>,  // should be serialized to http::Uri instead
-    creation_time: DateTime<Utc>
+    agency_uri: Option<String>, // should be serialized to http::Uri instead
+    creation_time: DateTime<Utc>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -27,7 +27,7 @@ struct OriginQuality {
 #[serde(rename_all = "camelCase")]
 struct OriginUncertainty {
     horizontal_uncertainty: f64,
-    preferred_description: String
+    preferred_description: String,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -56,7 +56,7 @@ struct Magnitude {
 struct Description {
     #[serde(rename = "type")]
     _type: String,
-    text: String
+    text: String,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -70,7 +70,7 @@ struct Event {
 #[serde(rename_all = "camelCase")]
 struct EventParameters {
     event: Vec<Event>,
-    creation_info: CreationInfo
+    creation_info: CreationInfo,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -84,10 +84,7 @@ pub(crate) fn deserialize_quakeml(data: String) {
     println!("{:?}", quakeml);
 }
 
-
 pub(crate) fn read_quakeml(filename: &Path) -> String {
-    let data = fs::read_to_string(filename)
-        .expect("something went wrong;");
+    let data = fs::read_to_string(filename).expect("something went wrong;");
     return data;
 }
-
