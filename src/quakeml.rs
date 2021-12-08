@@ -37,10 +37,10 @@ struct Origin {
     longitude: RealQuantity,
     latitude: RealQuantity,
     depth: RealQuantity,
-    origin_uncertainty: OriginUncertainty,
-    quality: OriginQuality,
-    evaluation_mode: String,
-    creation_info: CreationInfo,
+    origin_uncertainty: Option<OriginUncertainty>,
+    quality: Option<OriginQuality>,
+    evaluation_mode: Option<String>,
+    creation_info: Option<CreationInfo>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -48,22 +48,22 @@ struct Origin {
 struct Magnitude {
     mag: RealQuantity,
     #[serde(rename = "type")]
-    _type: String,
+    _type: Option<String>,
     creation_time: Option<DateTime<Utc>>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 struct Description {
     #[serde(rename = "type")]
-    _type: String,
+    _type: Option<String>,
     text: String,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 struct Event {
-    description: Description,
-    origin: Origin,
+    origin: Vec<Origin>,
     magnitude: Magnitude,
+    description: Option<Description>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
