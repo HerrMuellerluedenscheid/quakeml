@@ -8,6 +8,7 @@ edition = "2021"
 license = "MIT"
 license-file = "LICENSE.txt"
 keywords = ["seismology"]
+exclude = ["/resources", ".*"]
 
 [dependencies]
 clap = "2.34"
