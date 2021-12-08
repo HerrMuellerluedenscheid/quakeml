@@ -1,6 +1,8 @@
 use chrono::{DateTime, Utc};
 use quick_xml::de::from_str;
 use serde::Deserialize;
+use std::fmt;
+use std::fmt::Formatter;
 use std::fs;
 use std::path::Path;
 
@@ -75,13 +77,19 @@ struct EventParameters {
 
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-struct Quakeml {
+struct QuakeML {
     event_parameters: EventParameters,
 }
 
+impl fmt::Display for QuakeML {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "Catalog length: {}", self.event_parameters.event.len())
+    }
+}
+
 pub(crate) fn deserialize_quakeml(data: String) {
-    let quakeml: Quakeml = from_str(&*data).expect("something went wrong");
-    println!("{:?}", quakeml);
+    let quakeml: QuakeML = from_str(&*data).expect("something went wrong");
+    println!("{}", quakeml);
 }
 
 pub(crate) fn read_quakeml(filename: &Path) -> String {
