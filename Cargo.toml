@@ -1,9 +1,11 @@
 [package]
 name = "quakeml"
 version = "0.1.0"
+authors = ["Marius Kriegerowski <marius.kriegerowski@gmail.com>"]
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+license = "MIT"
+license-file = "LICENSE.txt"
+keywords = ["seismology"]
 
 [dependencies]
 serde = { version = "1.0", features = [ "derive" ], macros = ["Deserialize", "PartialEq"]}
