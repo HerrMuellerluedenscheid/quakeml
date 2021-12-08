@@ -2,6 +2,7 @@
 name = "quakeml"
 version = "0.1.0"
 authors = ["Marius Kriegerowski <marius.kriegerowski@gmail.com>"]
+description = "Deserialization of QuakeML - a flexible, extensible and modular XML representation of seismological data."
 edition = "2021"
 license = "MIT"
 license-file = "LICENSE.txt"
