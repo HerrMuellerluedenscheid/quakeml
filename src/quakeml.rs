@@ -50,29 +50,44 @@ struct Origin {
 #[serde(rename_all = "camelCase")]
 struct Magnitude {
     mag: RealQuantity,
-    #[serde(rename = "type")]
-    _type: Option<String>,
     creation_time: Option<DateTime<Utc>>,
-}
 
-#[derive(Debug, Deserialize, PartialEq)]
-struct Description {
+    #[serde(rename = "originID")]
+    origin_id: Option<ResourceReference>,
+
+    #[serde(rename = "methodID")]
+    method_id: Option<ResourceReference>,
+
     #[serde(rename = "type")]
     _type: Option<String>,
-    text: String,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
+struct EventDescription {
+    text: String,
+
+    #[serde(rename = "type")]
+    _type: Option<String>,
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
 struct Event {
     origin: Vec<Origin>,
+
+    #[serde(rename = "publicID")]
+    public_id: ResourceReference,
     magnitude: Magnitude,
-    description: Option<Description>,
+    description: Vec<EventDescription>,
+    preferred_origin_id: Option<ResourceReference>,
+    preferred_magnitude_id: Option<ResourceReference>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 struct EventParameters {
-    event: Vec<Event>,
+    #[serde(rename = "event")]
+    events: Vec<Event>,
     creation_info: CreationInfo,
 }
 
@@ -84,7 +99,11 @@ pub struct QuakeML {
 
 impl fmt::Display for QuakeML {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "Events in catalog: {}", self.event_parameters.event.len())
+        write!(
+            f,
+            "Events in catalog: {}",
+            self.event_parameters.events.len()
+        )
     }
 }
 
@@ -105,9 +124,13 @@ mod tests {
     use crate::quakeml::read_quakeml;
 
     #[test]
-    fn catalog_max() {
+    fn catalog_attributes() {
         let mut data_sample = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         data_sample.push("resources/sample.quakeml");
         let _catalog = read_quakeml(&data_sample);
+        assert_eq!(
+            _catalog.event_parameters.events[0].public_id,
+            "quakeml:earthquake.usgs.gov/fdsnws/event/1/query?eventid=ci14517572&format=quakeml"
+        );
     }
 }
