@@ -1,4 +1,6 @@
-# QuakeML Deserialization in rust
+# QuakeML deserialization in rust
+
+![crates.io](https://img.shields.io/crates/v/quakeml.svg)
 
 [This python implementation](https://git.gfz-potsdam.de/nooshiri/pyquakeml/-/blob/master/src/pyquakeml.py)
 by Nima Nooshiri has been used as reference.
