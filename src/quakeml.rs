@@ -1,4 +1,3 @@
-use std::cmp::max;
 use std::fmt;
 use std::fmt::Formatter;
 use std::fs;
@@ -37,6 +36,8 @@ struct OriginUncertainty {
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 struct Origin {
+    #[serde(rename = "publicID")]
+    public_id: ResourceReference,
     time: TimeQuantity,
     longitude: RealQuantity,
     latitude: RealQuantity,
@@ -52,6 +53,8 @@ struct Origin {
 struct Magnitude {
     mag: RealQuantity,
     creation_time: Option<DateTime<Utc>>,
+    #[serde(rename = "publicID")]
+    public_id: ResourceReference,
 
     #[serde(rename = "originID")]
     origin_id: Option<ResourceReference>,
@@ -89,10 +92,27 @@ struct Event {
 }
 
 impl Event {
+    fn preferred_origin(&self) -> Option<&Origin> {
+        // Get the preferred origin
+        // Returns the first origin if there is only one origin defined.
+        // Otherwise, returns the origin matching the defined preferred_origin_id.
+
+        if self.origin.len() == 1 {
+            return Some(&self.origin[0]);
+        } else {
+            let preferred_origin = self
+                .origin
+                .iter()
+                .find(|&origin| origin.public_id == *self.preferred_origin_id.as_ref().unwrap())
+                .expect("Didn't find an origin with preferred_origin_id");
+            Some(&preferred_origin)
+        }
+    }
+
     fn preferred_magnitude(&self) -> Option<f64> {
         // Get the preferred magnitude as f64
         // Returns the first magnitude if there is only one magnitude defined.
-        // Otherwise, returns the magnitude matching the defined preferred_origin_id.
+        // Otherwise, returns the magnitude matching the defined preferred_magnitude_id.
         if self.magnitudes.len() == 0 {
             return None;
         }
@@ -103,8 +123,8 @@ impl Event {
             preferred_magnitude = self
                 .magnitudes
                 .iter()
-                .find(|mag| mag.origin_id == self.preferred_origin_id)
-                .expect("Didn't find a magnitude with preferred_origin_id");
+                .find(|&mag| mag.public_id == *self.preferred_magnitude_id.as_ref().unwrap())
+                .expect("Didn't find a magnitude with preferred_magnitude_id");
         }
 
         Some(preferred_magnitude.mag.value)
