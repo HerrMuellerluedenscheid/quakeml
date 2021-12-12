@@ -1,3 +1,4 @@
+use std::cmp::max;
 use std::fmt;
 use std::fmt::Formatter;
 use std::fs;
@@ -77,10 +78,37 @@ struct Event {
 
     #[serde(rename = "publicID")]
     public_id: ResourceReference,
-    magnitude: Magnitude,
+
+    #[serde(rename = "magnitude")]
+    magnitudes: Vec<Magnitude>,
     description: Vec<EventDescription>,
+
+    #[serde(rename = "preferredOriginID")]
     preferred_origin_id: Option<ResourceReference>,
     preferred_magnitude_id: Option<ResourceReference>,
+}
+
+impl Event {
+    fn preferred_magnitude(&self) -> Option<f64> {
+        // Get the preferred magnitude as f64
+        // Returns the first magnitude if there is only one magnitude defined.
+        // Otherwise, returns the magnitude matching the defined preferred_origin_id.
+        if self.magnitudes.len() == 0 {
+            return None;
+        }
+
+        let mut preferred_magnitude = &self.magnitudes[0];
+
+        if self.magnitudes.len() >= 2 {
+            preferred_magnitude = self
+                .magnitudes
+                .iter()
+                .find(|mag| mag.origin_id == self.preferred_origin_id)
+                .expect("Didn't find a magnitude with preferred_origin_id");
+        }
+
+        Some(preferred_magnitude.mag.value)
+    }
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -97,12 +125,35 @@ pub struct QuakeML {
     event_parameters: EventParameters,
 }
 
+impl QuakeML {
+    fn min_magnitude(&self) -> Option<f64> {
+        let min_mag_event = &self.event_parameters.events.iter().min_by(|a, b| {
+            a.preferred_magnitude()
+                .unwrap()
+                .partial_cmp(&b.preferred_magnitude().unwrap())
+                .unwrap()
+        });
+        return min_mag_event.unwrap().preferred_magnitude();
+    }
+    fn max_magnitude(&self) -> Option<f64> {
+        let max_mag_event = &self.event_parameters.events.iter().max_by(|a, b| {
+            a.preferred_magnitude()
+                .unwrap()
+                .partial_cmp(&b.preferred_magnitude().unwrap())
+                .unwrap()
+        });
+        return max_mag_event.unwrap().preferred_magnitude();
+    }
+}
+
 impl fmt::Display for QuakeML {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "Events in catalog: {}",
-            self.event_parameters.events.len()
+            "Events in catalog: {}\n Max magnitude: {}\n Min magnitude: {}",
+            self.event_parameters.events.len(),
+            self.max_magnitude().unwrap(),
+            self.min_magnitude().unwrap(),
         )
     }
 }
