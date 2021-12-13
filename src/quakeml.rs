@@ -178,21 +178,21 @@ impl fmt::Display for QuakeML {
     }
 }
 
-pub(crate) fn deserialize_quakeml(data: String) -> QuakeML {
+pub fn deserialize_quakeml(data: String) -> QuakeML {
     let quakeml: QuakeML = from_str(&*data).expect("something went wrong");
     quakeml
 }
 
-pub(crate) fn read_quakeml(filename: &PathBuf) -> QuakeML {
-    let data = fs::read_to_string(filename).expect("something went wrong;");
+pub fn read_quakeml(filename: &PathBuf) -> QuakeML {
+    let data =
+        fs::read_to_string(filename).expect("Failed to read quakeml into string");
     deserialize_quakeml(data)
 }
 
 #[cfg(test)]
 mod tests {
     use std::path::PathBuf;
-
-    use crate::quakeml::read_quakeml;
+    use crate::read_quakeml;
 
     #[test]
     fn catalog_attributes() {

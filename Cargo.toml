@@ -9,6 +9,14 @@ license-file = "LICENSE.txt"
 keywords = ["seismology"]
 exclude = ["/resources", ".*"]
 
+[lib]
+name = "quakeml"
+path = "src/quakeml.rs"
+
+[[bin]]
+name = "quakeml"
+path = "src/main.rs"
+
 [dependencies]
 clap = "2.34"
 structopt = "0.3.13"
