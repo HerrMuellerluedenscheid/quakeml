@@ -1,5 +1,4 @@
-mod quakeml;
-
+use quakeml;
 use structopt::StructOpt;
 
 #[derive(StructOpt)]

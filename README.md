@@ -8,12 +8,12 @@ by Nima Nooshiri has been used as reference.
 ## Usage
 
 ```rust
-    use std::path::PathBuf;
-    use crate::quakeml::read_quakeml;
+use quakeml::read_quakeml;
+use std::path::PathBuf;
 
-    fn main() {
-        let path = PathBuf::from(r"sample/data.quakeml");
-        let catalog = read_quakeml(&path);
-        println!("catalog data: {}", catalog);
-    }
+fn main() {
+    let path = PathBuf::from(r"sample/data.quakeml");
+    let catalog = read_quakeml(&path);
+    println!("catalog data: {}", catalog);
+}
 ```
