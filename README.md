@@ -17,3 +17,14 @@ fn main() {
     println!("catalog data: {}", catalog);
 }
 ```
+
+# Download Events from USGS
+
+After installing the command line tools with
+```shell
+cargo install --path .
+```
+you can download events given a certain time range from USGS with e.g.:
+```shell
+usgs --start-time 2021-01-01T00:00:00 --end-time 2021-01-01T01:00:00  --save-as events.quakeml
+```

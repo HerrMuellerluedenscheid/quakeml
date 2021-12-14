@@ -30,7 +30,7 @@ struct OriginQuality {
 #[serde(rename_all = "camelCase")]
 struct OriginUncertainty {
     horizontal_uncertainty: f64,
-    preferred_description: String,
+    preferred_description: Option<String>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -146,6 +146,11 @@ pub struct QuakeML {
 }
 
 impl QuakeML {
+    pub fn from_str(data: &String) -> Self {
+        let quakeml: QuakeML = from_str(data).expect("something went wrong");
+        quakeml
+    }
+
     fn min_magnitude(&self) -> Option<f64> {
         let min_mag_event = &self.event_parameters.events.iter().min_by(|a, b| {
             a.preferred_magnitude()
@@ -155,6 +160,7 @@ impl QuakeML {
         });
         return min_mag_event.unwrap().preferred_magnitude();
     }
+
     fn max_magnitude(&self) -> Option<f64> {
         let max_mag_event = &self.event_parameters.events.iter().max_by(|a, b| {
             a.preferred_magnitude()
@@ -178,21 +184,15 @@ impl fmt::Display for QuakeML {
     }
 }
 
-pub fn deserialize_quakeml(data: String) -> QuakeML {
-    let quakeml: QuakeML = from_str(&*data).expect("something went wrong");
-    quakeml
-}
-
 pub fn read_quakeml(filename: &PathBuf) -> QuakeML {
-    let data =
-        fs::read_to_string(filename).expect("Failed to read quakeml into string");
-    deserialize_quakeml(data)
+    let data = fs::read_to_string(filename).expect("Failed to read quakeml into string");
+    QuakeML::from_str(&data)
 }
 
 #[cfg(test)]
 mod tests {
-    use std::path::PathBuf;
     use crate::read_quakeml;
+    use std::path::PathBuf;
 
     #[test]
     fn catalog_attributes() {

@@ -17,7 +17,14 @@ path = "src/quakeml.rs"
 name = "quakeml"
 path = "src/main.rs"
 
+[[bin]]
+name = "usgs"
+path = "src/usgs.rs"
+
 [dependencies]
+xmltree = "0.10.3"
+tokio = { version = "1.14.0", features = ["full"]}
+reqwest = "0.11.7"
 clap = "2.34"
 structopt = "0.3.13"
 serde = { version = "1.0", features = [ "derive" ], macros = ["Deserialize", "PartialEq"]}
