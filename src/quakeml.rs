@@ -92,11 +92,10 @@ struct Event {
 }
 
 impl Event {
+    /// Get the preferred origin
+    /// Returns the first origin if there is only one origin defined.
+    /// Otherwise, returns the origin matching the defined preferred_origin_id.
     fn preferred_origin(&self) -> Option<&Origin> {
-        // Get the preferred origin
-        // Returns the first origin if there is only one origin defined.
-        // Otherwise, returns the origin matching the defined preferred_origin_id.
-
         if self.origin.len() == 1 {
             return Some(&self.origin[0]);
         } else {
@@ -109,10 +108,10 @@ impl Event {
         }
     }
 
+    /// Get the preferred magnitude as f64
+    /// Returns the first magnitude if there is only one magnitude defined.
+    /// Otherwise, returns the magnitude matching the defined preferred_magnitude_id.
     fn preferred_magnitude(&self) -> Option<f64> {
-        // Get the preferred magnitude as f64
-        // Returns the first magnitude if there is only one magnitude defined.
-        // Otherwise, returns the magnitude matching the defined preferred_magnitude_id.
         if self.magnitudes.len() == 0 {
             return None;
         }
@@ -146,11 +145,13 @@ pub struct QuakeML {
 }
 
 impl QuakeML {
+    /// Create a QuakeML struct from a String.
     pub fn from_str(data: &String) -> Self {
         let quakeml: QuakeML = from_str(data).expect("something went wrong");
         quakeml
     }
 
+    /// Returns the minimum magnitude of the catalog (of the preferred magnitudes).
     fn min_magnitude(&self) -> Option<f64> {
         let min_mag_event = &self.event_parameters.events.iter().min_by(|a, b| {
             a.preferred_magnitude()
@@ -161,6 +162,7 @@ impl QuakeML {
         return min_mag_event.unwrap().preferred_magnitude();
     }
 
+    /// Returns the maximum magnitude of the catalog (of the preferred magnitudes).
     fn max_magnitude(&self) -> Option<f64> {
         let max_mag_event = &self.event_parameters.events.iter().max_by(|a, b| {
             a.preferred_magnitude()
@@ -184,6 +186,7 @@ impl fmt::Display for QuakeML {
     }
 }
 
+/// Read a QuakeML file and generate a QuakeML struct.
 pub fn read_quakeml(filename: &PathBuf) -> QuakeML {
     let data = fs::read_to_string(filename).expect("Failed to read quakeml into string");
     QuakeML::from_str(&data)
