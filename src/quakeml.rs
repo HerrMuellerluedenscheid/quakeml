@@ -1,3 +1,6 @@
+mod base_types;
+use base_types::{RealQuantity, ResourceReference, TimeQuantity};
+
 use std::fmt;
 use std::fmt::Formatter;
 use std::fs;
@@ -6,8 +9,6 @@ use std::path::PathBuf;
 use chrono::{DateTime, Utc};
 use quick_xml::de::from_str;
 use serde::Deserialize;
-
-include!("base_types.rs");
 
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -198,7 +199,7 @@ mod tests {
     use std::path::PathBuf;
 
     #[test]
-    fn catalog_attributes() {
+    fn deserialize() {
         let mut data_sample = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         data_sample.push("resources/sample.quakeml");
         let _catalog = read_quakeml(&data_sample);

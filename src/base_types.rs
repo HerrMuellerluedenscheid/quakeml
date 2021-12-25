@@ -1,12 +1,14 @@
+use serde::Deserialize;
+use chrono::{DateTime, Utc};
 
-type ResourceReference = String;
+pub type ResourceReference = String;
 
 #[derive(Debug, Deserialize, PartialEq)]
-struct RealQuantity {
-    value: f64
+pub struct RealQuantity {
+    pub value: f64
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
-struct TimeQuantity {
-    value: DateTime<Utc>
+pub struct TimeQuantity {
+    pub value: DateTime<Utc>
 }
