@@ -1,5 +1,6 @@
 use quakeml;
 use structopt::StructOpt;
+use log::{debug, error, log_enabled, info, Level};
 
 #[derive(StructOpt)]
 struct Cli {
@@ -8,7 +9,11 @@ struct Cli {
 }
 
 fn main() {
-    let args = Cli::from_args();
-    let catalog = quakeml::read_quakeml(&args.path);
-    println!("{}", catalog);
+    env_logger::init();
+
+    debug!("this is a debug {}", "message");
+    error!("this is printed by default");
+    // let args = Cli::from_args();
+    // let catalog = quakeml::read_quakeml(&args.path);
+    // println!("{}", catalog);
 }

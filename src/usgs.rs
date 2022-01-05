@@ -3,7 +3,9 @@ extern crate clap;
 use std::fs::File;
 use std::io::prelude::*;
 
-use clap::{App, Arg};
+use clap::{App, Arg, ArgMatches};
+use env_logger::Env;
+use log::{debug, info};
 
 use quakeml::QuakeML;
 use reqwest::Error;
@@ -35,6 +37,7 @@ async fn request_catalog(catalog_request: CatalogRequest) -> Result<String, Erro
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
+
     let matches = App::new("Download earthquake catalogs from USGS as QuakeML.")
         .arg(
             Arg::with_name("starttime")
@@ -56,7 +59,15 @@ async fn main() -> Result<(), Error> {
                 .required(true)
                 .takes_value(true),
         )
+        .arg(
+            Arg::with_name("verbose")
+                .short("v")
+                .long("verbose")
+                .takes_value(false)
+        )
         .get_matches();
+
+    setup_logging(&matches);
 
     let out_filename = matches.value_of("saveas").unwrap();
 
@@ -69,7 +80,7 @@ async fn main() -> Result<(), Error> {
     let catalog_data = catalog_request.await;
     let raw_quakeml = catalog_data.unwrap();
     let catalog = QuakeML::from_str(&raw_quakeml);
-    println!("Downloaded data from usgs: \n{}", catalog);
+    info!("Downloaded data from usgs:\n{}", catalog);
 
     let mut out_file = File::create(&out_filename).expect("failed to create file");
 
@@ -81,4 +92,14 @@ async fn main() -> Result<(), Error> {
     let _ = out_file.write("\n".as_bytes());
 
     Ok(())
+}
+
+fn setup_logging(matches: &ArgMatches) {
+    let verbose = matches.is_present("verbose");
+    let mut log_level = "info";
+    if verbose == true {
+        log_level = "debug"
+    }
+    let env = Env::default().default_filter_or(log_level);
+    env_logger::init_from_env(env);
 }
