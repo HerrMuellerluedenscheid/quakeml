@@ -37,7 +37,6 @@ async fn request_catalog(catalog_request: CatalogRequest) -> Result<String, Erro
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-
     let matches = App::new("Download earthquake catalogs from USGS as QuakeML.")
         .arg(
             Arg::with_name("starttime")
@@ -63,7 +62,7 @@ async fn main() -> Result<(), Error> {
             Arg::with_name("verbose")
                 .short("v")
                 .long("verbose")
-                .takes_value(false)
+                .takes_value(false),
         )
         .get_matches();
 
