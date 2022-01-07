@@ -1,7 +1,7 @@
+use log::{debug, error, info, log_enabled, Level};
 use quakeml;
 use structopt::StructOpt;
-use log::{debug, error, log_enabled, info, Level};
-
+use std::time::{Duration, Instant};
 #[derive(StructOpt)]
 struct Cli {
     #[structopt(parse(from_os_str))]
@@ -10,10 +10,11 @@ struct Cli {
 
 fn main() {
     env_logger::init();
+    let args = Cli::from_args();
 
-    debug!("this is a debug {}", "message");
-    error!("this is printed by default");
-    // let args = Cli::from_args();
-    // let catalog = quakeml::read_quakeml(&args.path);
-    // println!("{}", catalog);
-}
+    let start = Instant::now();
+    let catalog = quakeml::read_quakeml(&args.path);
+    let duration = start.elapsed();
+    println!("{}", catalog);
+
+    println!("Elapsed time: {:?}", duration);}

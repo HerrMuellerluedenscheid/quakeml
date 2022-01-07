@@ -75,6 +75,11 @@ struct EventDescription {
     _type: Option<String>,
 }
 
+fn empty_vector_magnitude() -> Vec<Magnitude> {
+    // Helper to default to when event magnitudes is empty.
+    Vec::new()
+}
+
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 struct Event {
@@ -83,9 +88,9 @@ struct Event {
     #[serde(rename = "publicID")]
     public_id: ResourceReference,
 
-    #[serde(rename = "magnitude")]
+    #[serde(rename = "magnitude", default = "empty_vector_magnitude")]
     magnitudes: Vec<Magnitude>,
-    description: Vec<EventDescription>,
+    description: Option<Vec<EventDescription>>,
 
     #[serde(rename = "preferredOriginID")]
     preferred_origin_id: Option<ResourceReference>,
@@ -154,23 +159,33 @@ impl QuakeML {
 
     /// Returns the minimum magnitude of the catalog (of the preferred magnitudes).
     fn min_magnitude(&self) -> Option<f64> {
-        let min_mag_event = &self.event_parameters.events.iter().min_by(|a, b| {
-            a.preferred_magnitude()
-                .unwrap()
-                .partial_cmp(&b.preferred_magnitude().unwrap())
-                .unwrap()
-        });
+        let min_mag_event = &self
+            .event_parameters
+            .events
+            .iter()
+            .filter(|a| !a.preferred_magnitude().is_none())
+            .min_by(|a, b| {
+                a.preferred_magnitude()
+                    .unwrap()
+                    .partial_cmp(&b.preferred_magnitude().unwrap())
+                    .unwrap()
+            });
         return min_mag_event.unwrap().preferred_magnitude();
     }
 
     /// Returns the maximum magnitude of the catalog (of the preferred magnitudes).
     fn max_magnitude(&self) -> Option<f64> {
-        let max_mag_event = &self.event_parameters.events.iter().max_by(|a, b| {
-            a.preferred_magnitude()
-                .unwrap()
-                .partial_cmp(&b.preferred_magnitude().unwrap())
-                .unwrap()
-        });
+        let max_mag_event = &self
+            .event_parameters
+            .events
+            .iter()
+            .filter(|a| !a.preferred_magnitude().is_none())
+            .max_by(|a, b| {
+                a.preferred_magnitude()
+                    .unwrap()
+                    .partial_cmp(&b.preferred_magnitude().unwrap())
+                    .unwrap()
+            });
         return max_mag_event.unwrap().preferred_magnitude();
     }
 }
