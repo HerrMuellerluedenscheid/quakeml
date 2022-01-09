@@ -1,7 +1,7 @@
 use log::{debug, error, info, log_enabled, Level};
 use quakeml;
-use structopt::StructOpt;
 use std::time::{Duration, Instant};
+use structopt::StructOpt;
 #[derive(StructOpt)]
 struct Cli {
     #[structopt(parse(from_os_str))]
@@ -17,4 +17,5 @@ fn main() {
     let duration = start.elapsed();
     println!("{}", catalog);
 
-    println!("Elapsed time: {:?}", duration);}
+    println!("Elapsed time: {:?}", duration);
+}
