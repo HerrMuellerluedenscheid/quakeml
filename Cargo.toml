@@ -5,7 +5,7 @@ authors = ["Marius Kriegerowski <marius.kriegerowski@gmail.com>"]
 description = "Deserialization of QuakeML - a flexible, extensible and modular XML representation of seismological data."
 repository = "https://github.com/HerrMuellerluedenscheid/quakeml"
 edition = "2021"
-license-file = "LICENSE.txt"
+license = "MIT"
 keywords = ["seismology"]
 exclude = ["/resources", ".*"]
 
