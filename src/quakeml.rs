@@ -110,7 +110,7 @@ fn empty_vector_magnitude() -> Vec<Magnitude> {
 #[serde(rename_all = "camelCase")]
 struct Event {
     origin: Vec<Origin>,
-:
+
     #[serde(rename = "publicID")]
     public_id: ResourceReference,
 
