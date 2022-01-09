@@ -1,5 +1,7 @@
 mod base_types;
-use base_types::{RealQuantity, ResourceReference, TimeQuantity};
+use base_types::{
+    GroundTruthLevel, OriginUncertaintyDescription, RealQuantity, ResourceReference, TimeQuantity,
+};
 
 use std::fmt;
 use std::fmt::Formatter;
@@ -20,18 +22,42 @@ struct CreationInfo {
 
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
+struct ConfidenceEllipsoid {
+    semi_major_axis_length: f64,
+    semi_minor_axis_length: f64,
+    semi_intermediate_axis_length: f64,
+    major_axis_plunge: f64,
+    major_axis_azimuth: f64,
+    major_axis_rotation: f64,
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
 struct OriginQuality {
-    used_station_count: Option<i32>,
+    associated_phase_count: Option<i32>,
     used_phase_count: Option<i32>,
+    associated_station_count: Option<i32>,
+    used_station_count: Option<i32>,
+    depth_phase_count: Option<i32>,
     standard_error: Option<f64>,
     azimuthal_gap: Option<f64>,
+    secondary_azimuthal_gap: Option<f64>,
+    ground_truth_level: Option<GroundTruthLevel>,
+    maximum_distance: Option<f64>,
+    minimum_distance: Option<f64>,
+    median_distance: Option<f64>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 struct OriginUncertainty {
-    horizontal_uncertainty: f64,
-    preferred_description: Option<String>,
+    horizontal_uncertainty: Option<f64>,
+    min_horizontal_uncertainty: Option<f64>,
+    max_horizontal_uncertainty: Option<f64>,
+    azimuth_max_horizontal_uncertainty: Option<f64>,
+    confidence_ellipsoid: Option<ConfidenceEllipsoid>,
+    preferred_description: Option<OriginUncertaintyDescription>,
+    confidence_level: Option<f64>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
